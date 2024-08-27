@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Drivers {
+  id    Int     @id @default(autoincrement()) @map("id")
+  driver_code String  @unique
+  name  String
+  driver_attendances DriverAttendances[]
+  shipment_costs ShipmentCosts[]
+  @@map("drivers")
+}
+model DriverAttendances {
+  id        Int     @id @default(autoincrement())
+  driver_code String  @unique
+  attendance_date DateTime
+  attendance_status Boolean
+  driver Drivers @relation(fields: [driver_code], references: [driver_code])
+
+  @@map("driver_attendances")
+}
+model ShipmentCosts{
+  id    Int     @id @default(autoincrement()) @map("id")
+  driver_code String  @unique
+  shipment_no  String @unique
+  total_costs  Float
+  cost_status String
+  driver Drivers @relation(fields: [driver_code], references: [driver_code])
+  shipment Shipments @relation(fields: [shipment_no], references: [shipment_no])
+  @@map("shipment_costs")
+}
+
+model Shipments{
+  shipment_no String @id
+  shipment_date DateTime
+  shipment_status String
+  shipment_costs ShipmentCosts[]
+  @@map("shipments")
+}
+model VariableConfigs{
+  key String @id
+  value Int
+  @@map("variable_configs")
+}

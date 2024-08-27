@@ -1,0 +1,1 @@
+export { IResultPaginated } from './Pagination'
